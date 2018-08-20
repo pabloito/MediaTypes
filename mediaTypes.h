@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "mediaTypesTest.h"
 
 #define TYPE_ARRAY_LENGTH 10
 #define MAX_TYPE_SIZE 15

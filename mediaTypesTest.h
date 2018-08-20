@@ -21,6 +21,7 @@ void testSplitOfNonSplittingString();
 void testNullBelongsToText();
 void testTextPlainBelongsToText();
 void testTextTrashBelongsToTextPlain();
+void testStressUserInput();
 
 void givenNullMediaType();
 void givenTextPlainMediaRange();
@@ -34,10 +35,12 @@ void givenADelimeterString();
 void givenASplittingString();
 void givenANonSplittingString();
 void givenNullString();
+void givenALargeUserInput();
 
 void whenCheckingIfMediaTypeIsInMediaRange();
 void whenCheckingContainment();
 void whenSplittingString();
+void whenSplittingUserInput();
 
 void thenStringOneIsEqualToTest();
 void thenStringTwoIsEqualToSplit();
@@ -47,6 +50,10 @@ void thenReturnedValueIsZero();
 void thenStringOneIsEqualToNoSplit();
 void thenStringTwoIsEqualToNull();
 void thenStringOneIsEqualToNull();
+void thenStringThreeIsEqualToStress();
+void thenStringFourIsEqualToUser();
+void thenStringFiveIsEqualToInput();
+void thenStringSixIsEqualToUnit();
 
 void freeSplitStrings();
 

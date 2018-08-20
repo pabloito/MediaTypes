@@ -17,7 +17,7 @@ int main(int argc, char ** args)
     char ** splitMediaRange = divideMediaType(mediaRangeComplete);
     if(!isValidMediaType(splitMediaRange))
     {
-      printf("'%s' is not a valid mediaRange. Exiting program...",mediaRangeComplete);
+      printf("'%s' is not a valid mediaRange. Exiting program...\n",mediaRangeComplete);
       exit(1);
     }
     i++;
@@ -138,7 +138,7 @@ char ** divideStrByDelimeter(char * string, char * delimeter)
   while((nextToken = strsep(&copy, delimeter)))
   {
     if(strcmp(nextToken,"")==0) break;
-    if(i>=size)
+    if((i*sizeof(char *))>=size)
     {
       size+=INITIAL_DICTIONARY_SIZE;
       dictionary=realloc(dictionary,size);

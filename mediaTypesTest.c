@@ -19,7 +19,79 @@ int mainTester()
   testTextPlainBelongsToText();
   testTextTrashBelongsToTextPlain();
   testNullBelongsToText();
+  testStressUserInput();
   return 0;
+}
+
+void testStressUserInput()
+{
+  printf("Entering user input stress test\n");
+  givenALargeUserInput();
+  whenSplittingUserInput();
+  thenStringOneIsEqualToTest();
+  thenStringTwoIsEqualToSplit();
+  thenStringThreeIsEqualToStress();
+  thenStringFourIsEqualToUser();
+  thenStringFiveIsEqualToInput();
+  thenStringSixIsEqualToUnit();
+  freeSplitStrings();
+}
+
+void givenALargeUserInput()
+{
+  testString="test\nsplit\nstress\nuser\ninput\nunit\n";
+}
+void whenSplittingUserInput()
+{
+  testSplitStrings = divideUserInputByLine(testString);
+}
+
+void thenStringThreeIsEqualToStress()
+{
+  if(strcmp(testSplitStrings[2],"stress")==0)
+  {
+    ok();
+  }
+  else
+  {
+    fail("Expected string equal to stress, found different string");
+  }
+}
+
+void thenStringFourIsEqualToUser()
+{
+  if(strcmp(testSplitStrings[3],"user")==0)
+  {
+    ok();
+  }
+  else
+  {
+    fail("Expected string equal to user, found different string");
+  }
+}
+
+void thenStringFiveIsEqualToInput()
+{
+  if(strcmp(testSplitStrings[4],"input")==0)
+  {
+    ok();
+  }
+  else
+  {
+    fail("Expected string equal to input, found different string");
+  }
+}
+
+void thenStringSixIsEqualToUnit()
+{
+  if(strcmp(testSplitStrings[5],"unit")==0)
+  {
+    ok();
+  }
+  else
+  {
+    fail("Expected string equal to unit, found different string");
+  }
 }
 
 void testNullBelongsToText()
