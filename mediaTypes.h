@@ -25,6 +25,7 @@ int mediaTypeBelongsToMediaRange(char ** mediaType, char ** mediaRange);
 void recursiveDoublePointerFree(char ** splitMediaType);
 int isValidMediaType(char ** mediaType);
 int fetchInputFromStdin(char ** bufferPosition);
+int mediaRangeEvaluator(int argc, char ** args);
 
 
 #endif

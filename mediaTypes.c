@@ -1,6 +1,8 @@
 #include "mediaTypes.h"
 
+
 char * types[TYPE_ARRAY_LENGTH]= {"application", "audio", "example", "font", "image", "message", "model", "multipart", "text", "video"};
+
 
 int main(int argc, char ** args)
 {
@@ -9,6 +11,19 @@ int main(int argc, char ** args)
     printf("Program must be executed as follows ./prog '[ListOfMediaRanges]'\n");
     exit(1);
   }
+  if(strcmp(args[1],"-t")==0) //testmode
+  {
+    mainTester();
+  }
+  else
+  {
+    mediaRangeEvaluator(argc, args);
+  }
+}
+
+
+int mediaRangeEvaluator(int argc, char ** args)
+{
   char ** mediaRangeCompleteList = divideMediaRangeList(args[1]);
   char * mediaRangeComplete;
   int i=0;
