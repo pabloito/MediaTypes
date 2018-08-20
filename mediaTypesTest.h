@@ -8,10 +8,6 @@
 #include "testLib.h"
 #include "mediaTypes.h"
 
-char ** testSplitStrings;
-char * testString;
-int testReturnValue;
-
 void testAudioBelongsToTypes();
 void testTrashDoesNotBelongToTypes();
 void testCapitalizedTypeBelongsToTypes();
