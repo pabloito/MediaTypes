@@ -20,6 +20,7 @@ int main(int argc, char ** args)
       printf("'%s' is not a valid mediaRange. Exiting program...",mediaRangeComplete);
       exit(1);
     }
+    i++;
   }
   char * input;
   fetchInputFromStdin(&input);
@@ -30,21 +31,36 @@ int main(int argc, char ** args)
   i=0;
   while((mediaTypeComplete=mediaTypeCompleteList[i])!=NULL)
   {
-      char ** splitMediaType = divideMediaType(mediaTypeComplete);
-      if(!isValidMediaType(splitMediaType))
+    int printCase=0;
+    char ** splitMediaType = divideMediaType(mediaTypeComplete);
+    if(!isValidMediaType(splitMediaType))
+    {
+      printCase=2;
+    }
+    int j=0;
+    while((mediaRangeComplete=mediaRangeCompleteList[j]) && !printCase)
+    {
+      char ** splitMediaRange = divideMediaType(mediaRangeComplete);
+      if(mediaTypeBelongsToMediaRange(splitMediaType,splitMediaRange))
       {
+        printCase=1;
+      }
+      j++;
+    }
+    switch(printCase)
+    {
+      case 0:
+        printf("false\n");
+      break;
+      case 1:
+        printf("true\n");
+      break;
+      case 2:
         printf("null\n");
-      }
-      int j=0;
-      while((mediaRangeComplete=mediaRangeCompleteList[j]))
-      {
-        char ** splitMediaRange = divideMediaType(mediaRangeComplete);
-        if(mediaTypeBelongsToMediaRange(splitMediaType,splitMediaRange))
-        {
-          printf("true\n");
-        }
-      }
-      printf("false\n");
+      break;
+    }
+
+    i++;
   }
   return 1;
 }
