@@ -2,6 +2,71 @@
 
 char * types[TYPE_ARRAY_LENGTH]= {"application", "audio", "example", "font", "image", "message", "model", "multipart", "text", "video"};
 
+int main(int argc, char ** args)
+{
+  if(argc!=2)
+  {
+    printf("Program must be executed as follows ./prog '[ListOfMediaRanges]'\n");
+    exit(1);
+  }
+  char ** mediaRangeCompleteList = divideMediaRangeList(args[1]);
+  char * mediaRangeComplete;
+  int i=0;
+  while((mediaRangeComplete=mediaRangeCompleteList[i])!=NULL)
+  {
+    char ** splitMediaRange = divideMediaType(mediaRangeComplete);
+    if(!isValidMediaType(splitMediaRange))
+    {
+      printf("'%s' is not a valid mediaRange. Exiting program...",mediaRangeComplete);
+      exit(1);
+    }
+  }
+  char * input;
+  fetchInputFromStdin(&input);
+  char ** mediaTypeCompleteList = divideUserInputByLine(input);
+  free(input);
+  char * mediaTypeComplete;
+
+  i=0;
+  while((mediaTypeComplete=mediaTypeCompleteList[i])!=NULL)
+  {
+      char ** splitMediaType = divideMediaType(mediaTypeComplete);
+      if(!isValidMediaType(splitMediaType))
+      {
+        printf("null\n");
+      }
+      int j=0;
+      while((mediaRangeComplete=mediaRangeCompleteList[j]))
+      {
+        char ** splitMediaRange = divideMediaType(mediaRangeComplete);
+        if(mediaTypeBelongsToMediaRange(splitMediaType,splitMediaRange))
+        {
+          printf("true\n");
+        }
+      }
+      printf("false\n");
+  }
+  return 1;
+}
+
+int fetchInputFromStdin(char ** bufferPosition)
+{
+  char c;
+  int counter=0;
+  char * buffer = malloc(INITIAL_INPUT_SIZE);
+  int size=INITIAL_INPUT_SIZE;
+  while((c=getchar())!=EOF){
+    if(counter>=size){
+      size+=INITIAL_INPUT_SIZE;
+      buffer = realloc(buffer, size);
+    }
+    *(buffer+counter)=c;
+    counter++;
+  }
+  *bufferPosition=buffer;
+  return counter;
+}
+
 int toNLowerString(char * lowerCaseCopy, char * original, int n)
 {
   char c = *original;
@@ -38,23 +103,23 @@ int isType(char * type)
   return 0;
 }
 
-char ** divideMediaType(char * mediaType)
+char ** divideStrByDelimeter(char * string, char * delimeter)
 {
   char * nextToken;
   char ** dictionary= malloc(INITIAL_DICTIONARY_SIZE);
 
-  if(mediaType==NULL)
+  if(string==NULL)
   {
       dictionary[0]=NULL;
       return dictionary;
   }
 
-  char * copy=strdup(mediaType);
+  char * copy=strdup(string);
   char * tofree=copy;
 
   int i=0, size=INITIAL_DICTIONARY_SIZE;
 
-  while((nextToken = strsep(&copy, "/")))
+  while((nextToken = strsep(&copy, delimeter)))
   {
     if(strcmp(nextToken,"")==0) break;
     if(i>=size)
@@ -75,6 +140,21 @@ char ** divideMediaType(char * mediaType)
   }
   dictionary[i]=NULL;
   return dictionary;
+}
+
+char ** divideMediaType(char * mediaType)
+{
+  return divideStrByDelimeter(mediaType, "/");
+}
+
+char ** divideUserInputByLine(char * userInput)
+{
+  return divideStrByDelimeter(userInput,"\n");
+}
+
+char ** divideMediaRangeList(char * mediaTypeList)
+{
+  return divideStrByDelimeter(mediaTypeList,",");
 }
 
 int mediaTypeBelongsToMediaRange(char ** mediaType, char ** mediaRange)
@@ -111,4 +191,30 @@ int mediaTypeBelongsToMediaRange(char ** mediaType, char ** mediaRange)
     i++;
   }
 
+}
+
+void finalizeMediaType(char ** splitMediaType)
+{
+  if(splitMediaType==NULL){
+    return;
+  }
+  int i=0;
+  while((splitMediaType[i])!=NULL)
+  {
+    free(splitMediaType[i]);
+    splitMediaType[i]=NULL;
+    i++;
+  }
+  free(splitMediaType);
+  splitMediaType=NULL;
+}
+
+int isValidMediaType(char ** mediaType)
+{
+  char ** dictionary=mediaType;
+  if(dictionary[0]==NULL ||!isType(dictionary[0]))
+  {
+    return 0;
+  }
+  return 1;
 }

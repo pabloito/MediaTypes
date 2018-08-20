@@ -8,6 +8,9 @@
 #include "testLib.h"
 #include "mediaTypes.h"
 
+
+int mainTester();
+
 void testAudioBelongsToTypes();
 void testTrashDoesNotBelongToTypes();
 void testCapitalizedTypeBelongsToTypes();

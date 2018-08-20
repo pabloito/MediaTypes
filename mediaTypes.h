@@ -9,12 +9,21 @@
 #define TYPE_ARRAY_LENGTH 10
 #define MAX_TYPE_SIZE 15
 #define INITIAL_DICTIONARY_SIZE 5 * sizeof(char *)
+#define INITIAL_INPUT_SIZE  100
 
 
 int isType(char * type);
 int toNLowerString(char * lowerCaseCopy, char * original, int n);
+
+char ** divideStrByDelimeter(char * string, char * delimeter);
 char ** divideMediaType(char * mediaType);
+char ** divideUserInputByLine(char * userInput);
+char ** divideMediaRangeList(char * mediaTypeList);
+
 int mediaTypeBelongsToMediaRange(char ** mediaType, char ** mediaRange);
+void finalizeMediaType(char ** splitMediaType);
+int isValidMediaType(char ** mediaType);
+int fetchInputFromStdin(char ** bufferPosition);
 
 
 #endif

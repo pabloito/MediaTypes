@@ -7,7 +7,7 @@ char ** testSplitStrings;
 char * testString;
 int testReturnValue;
 
-int main(int argc, char ** args)
+int mainTester()
 {
   testAudioBelongsToTypes();
   testTrashDoesNotBelongToTypes();
