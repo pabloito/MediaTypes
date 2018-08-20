@@ -18,9 +18,11 @@ int main(int argc, char ** args)
     if(!isValidMediaType(splitMediaRange))
     {
       printf("'%s' is not a valid mediaRange. Exiting program...\n",mediaRangeComplete);
+      recursiveDoublePointerFree(splitMediaRange);
       exit(1);
     }
     i++;
+    recursiveDoublePointerFree(splitMediaRange);
   }
   char * input;
   fetchInputFromStdin(&input);
@@ -46,6 +48,7 @@ int main(int argc, char ** args)
         printCase=1;
       }
       j++;
+      recursiveDoublePointerFree(splitMediaRange);
     }
     switch(printCase)
     {
@@ -59,9 +62,11 @@ int main(int argc, char ** args)
         printf("null\n");
       break;
     }
-
+    recursiveDoublePointerFree(splitMediaType);
     i++;
   }
+  recursiveDoublePointerFree(mediaTypeCompleteList);
+  recursiveDoublePointerFree(mediaRangeCompleteList);
   return 1;
 }
 
@@ -122,12 +127,11 @@ int isType(char * type)
 char ** divideStrByDelimeter(char * string, char * delimeter)
 {
   char * nextToken;
-  char ** dictionary= malloc(INITIAL_DICTIONARY_SIZE);
+  char ** dictionary= malloc(INITIAL_DICTIONARY_SIZE *sizeof(char *));
 
   if(string==NULL)
   {
-      dictionary[0]=NULL;
-      return dictionary;
+    return dictionary;
   }
 
   char * copy=strdup(string);
@@ -138,10 +142,10 @@ char ** divideStrByDelimeter(char * string, char * delimeter)
   while((nextToken = strsep(&copy, delimeter)))
   {
     if(strcmp(nextToken,"")==0) break;
-    if((i*sizeof(char *))>=size)
+    if(i>=size)
     {
       size+=INITIAL_DICTIONARY_SIZE;
-      dictionary=realloc(dictionary,size);
+      dictionary=realloc(dictionary,size *sizeof(char *));
     }
     dictionary[i]=strdup(nextToken);
     i++;
@@ -152,7 +156,7 @@ char ** divideStrByDelimeter(char * string, char * delimeter)
   if(i>=size)
   {
     size+=1;
-    dictionary=realloc(dictionary,size);
+    dictionary=realloc(dictionary,size * sizeof(char *));
   }
   dictionary[i]=NULL;
   return dictionary;
@@ -209,7 +213,7 @@ int mediaTypeBelongsToMediaRange(char ** mediaType, char ** mediaRange)
 
 }
 
-void finalizeMediaType(char ** splitMediaType)
+void recursiveDoublePointerFree(char ** splitMediaType)
 {
   if(splitMediaType==NULL){
     return;
