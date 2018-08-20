@@ -76,3 +76,39 @@ char ** divideMediaType(char * mediaType)
   dictionary[i]=NULL;
   return dictionary;
 }
+
+int mediaTypeBelongsToMediaRange(char ** mediaType, char ** mediaRange)
+{
+  if(mediaType==NULL || mediaRange==NULL)
+  {
+    return 0;
+  }
+
+  char * mediaTypeToken;
+  char * mediaRangeToken;
+
+  int i=0;
+  while(1)
+  {
+    mediaTypeToken = mediaType[i];
+    mediaRangeToken = mediaRange[i];
+    if(mediaRangeToken==NULL)
+    {
+      return 1;
+    }
+    if(mediaTypeToken==NULL)
+    {
+      return 0;
+    }
+    if(strcmp(mediaRangeToken,"*")==0)
+    {
+      return 1;
+    }
+    if(strcmp(mediaRangeToken,mediaTypeToken)!=0)
+    {
+      return 0;
+    }
+    i++;
+  }
+
+}

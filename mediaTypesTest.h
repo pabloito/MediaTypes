@@ -15,26 +15,34 @@ void testSplitOfDelimeterString();
 void testSplitOfNull();
 void testSplitOfSplittingString();
 void testSplitOfNonSplittingString();
+void testNullBelongsToText();
+void testTextPlainBelongsToText();
+void testTextTrashBelongsToTextPlain();
+
+void givenNullMediaType();
+void givenTextPlainMediaRange();
+void givenTextTrashMediaType();
+void givenTextMediaRange();
+void givenTextPlainMediaType();
 void givenStringAudio();
 void givenStringTrash();
 void givenCapitalizedType();
-void whenCheckingContainment();
-void thenReturnedValueIsOne();
-void thenReturnedValueIsZero();
-
-
 void givenADelimeterString();
 void givenASplittingString();
+void givenANonSplittingString();
+void givenNullString();
+
+void whenCheckingIfMediaTypeIsInMediaRange();
+void whenCheckingContainment();
 void whenSplittingString();
+
 void thenStringOneIsEqualToTest();
 void thenStringTwoIsEqualToSplit();
 void thenStringThreeIsEqualToNull();
-
-void givenANonSplittingString();
+void thenReturnedValueIsOne();
+void thenReturnedValueIsZero();
 void thenStringOneIsEqualToNoSplit();
 void thenStringTwoIsEqualToNull();
-
-void givenNullString();
 void thenStringOneIsEqualToNull();
 
 void freeSplitStrings();

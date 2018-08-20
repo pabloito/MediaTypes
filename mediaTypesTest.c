@@ -1,6 +1,8 @@
 #include "mediaTypesTest.h"
 
 
+char * testMediaType[2];
+char * testMediaRange[2];
 char ** testSplitStrings;
 char * testString;
 int testReturnValue;
@@ -14,7 +16,73 @@ int main(int argc, char ** args)
   testSplitOfSplittingString();
   testSplitOfNonSplittingString();
   testSplitOfDelimeterString();
+  testTextPlainBelongsToText();
+  testTextTrashBelongsToTextPlain();
+  testNullBelongsToText();
   return 0;
+}
+
+void testNullBelongsToText()
+{
+  printf("Entering null belongs to text test\n");
+  givenNullMediaType();
+  givenTextMediaRange();
+  whenCheckingIfMediaTypeIsInMediaRange();
+  thenReturnedValueIsZero();
+}
+
+void givenNullMediaType()
+{
+  testMediaType[0]=NULL;
+  testMediaType[1]=NULL;
+}
+
+void testTextTrashBelongsToTextPlain()
+{
+  printf("Entering text trash belongs to text plain test\n");
+  givenTextTrashMediaType();
+  givenTextPlainMediaRange();
+  whenCheckingIfMediaTypeIsInMediaRange();
+  thenReturnedValueIsZero();
+}
+
+void givenTextPlainMediaRange()
+{
+  testMediaRange[0]="text";
+  testMediaRange[1]="plain";
+}
+
+void givenTextTrashMediaType()
+{
+  testMediaType[0]="text";
+  testMediaType[1]="trash";
+}
+
+void testTextPlainBelongsToText()
+{
+  printf("Entering text plain belongs to text test\n");
+  givenTextPlainMediaType();
+  givenTextMediaRange();
+  whenCheckingIfMediaTypeIsInMediaRange();
+  thenReturnedValueIsOne();
+}
+
+void givenTextMediaRange()
+{
+
+  testMediaRange[1]="text";
+  testMediaRange[1]="*";
+}
+
+void givenTextPlainMediaType()
+{
+  testMediaType[1]="text";
+  testMediaType[1]="plain";
+}
+
+void whenCheckingIfMediaTypeIsInMediaRange()
+{
+  testReturnValue = mediaTypeBelongsToMediaRange(testMediaType,testMediaRange);
 }
 
 void testSplitOfDelimeterString()

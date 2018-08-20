@@ -14,6 +14,7 @@
 int isType(char * type);
 int toNLowerString(char * lowerCaseCopy, char * original, int n);
 char ** divideMediaType(char * mediaType);
+int mediaTypeBelongsToMediaRange(char ** mediaType, char ** mediaRange);
 
 
 #endif
