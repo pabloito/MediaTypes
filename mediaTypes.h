@@ -8,11 +8,11 @@
 
 #define TYPE_ARRAY_LENGTH 10
 #define MAX_TYPE_SIZE 15
-#define INITIAL_DICTIONARY_SIZE 5
+#define INITIAL_DICTIONARY_SIZE 5 * sizeof(char *)
 
 
 int isType(char * type);
-void toLowerString(char * lowerCaseCopy, char * original);
+int toNLowerString(char * lowerCaseCopy, char * original, int n);
 char ** divideMediaType(char * mediaType);
 
 
