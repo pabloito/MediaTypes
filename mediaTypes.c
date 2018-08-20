@@ -84,6 +84,11 @@ int fetchInputFromStdin(char ** bufferPosition)
     *(buffer+counter)=c;
     counter++;
   }
+  if(counter>=size){
+    size+=1;
+    buffer = realloc(buffer, size);
+  }
+  *(buffer+counter)=0;
   *bufferPosition=buffer;
   return counter;
 }
@@ -127,7 +132,7 @@ int isType(char * type)
 char ** divideStrByDelimeter(char * string, char * delimeter)
 {
   char * nextToken;
-  char ** dictionary= malloc(INITIAL_DICTIONARY_SIZE *sizeof(char *));
+  char ** dictionary= calloc(INITIAL_DICTIONARY_SIZE, sizeof(char *));
 
   if(string==NULL)
   {
