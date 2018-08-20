@@ -9,7 +9,17 @@ int main(int argc, char ** args)
   testSplitOfNull();
   testSplitOfSplittingString();
   testSplitOfNonSplittingString();
+  testSplitOfDelimeterString();
   return 0;
+}
+
+void testSplitOfDelimeterString()
+{
+  printf("Entering split of delimeter string test\n");
+  givenADelimeterString();
+  whenSplittingString();
+  thenStringOneIsEqualToNull();
+  freeSplitStrings();
 }
 
 void testSplitOfNonSplittingString()
@@ -31,6 +41,11 @@ void testSplitOfSplittingString()
   thenStringTwoIsEqualToSplit();
   thenStringThreeIsEqualToNull();
   freeSplitStrings();
+}
+
+void givenADelimeterString()
+{
+  testString = "/////";
 }
 
 void givenANonSplittingString()

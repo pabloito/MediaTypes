@@ -15,6 +15,7 @@ int testReturnValue;
 void testAudioBelongsToTypes();
 void testTrashDoesNotBelongToTypes();
 void testCapitalizedTypeBelongsToTypes();
+void testSplitOfDelimeterString();
 void testSplitOfNull();
 void testSplitOfSplittingString();
 void testSplitOfNonSplittingString();
@@ -25,6 +26,8 @@ void whenCheckingContainment();
 void thenReturnedValueIsOne();
 void thenReturnedValueIsZero();
 
+
+void givenADelimeterString();
 void givenASplittingString();
 void whenSplittingString();
 void thenStringOneIsEqualToTest();
