@@ -1,15 +1,18 @@
+#include <stdbool.h>
 #include "mediaTypes.h"
 
 char * types[TYPE_ARRAY_LENGTH]= {"application", "audio", "example", "font", "image", "message", "model", "multipart", "text", "video"};
 
+
 int main(int argc, char ** args)
 {
-  if(argc!=2)
+  if(argc!=2  && !stringIsDelimited(args[1]))
   {
     printf("Program must be executed as follows ./prog '[ListOfMediaRanges]'\n");
     exit(1);
   }
-  char ** mediaRangeCompleteList = divideMediaRangeList(args[1]);
+  char * listOfMediaRanges = removeStringDelimitations(args[1]);
+  char ** mediaRangeCompleteList = divideMediaRangeList(listOfMediaRanges);
   char * mediaRangeComplete;
   int i=0;
   while((mediaRangeComplete=mediaRangeCompleteList[i])!=NULL)
@@ -45,6 +48,39 @@ int main(int argc, char ** args)
         }
       }
       printf("false\n");
+  }
+  return 1;
+}
+
+char *removeStringDelimitations(char *string) {
+  char * ret = string+1;
+  char c;
+  string++;
+  while(*string!=0) string++;
+  *(string-1)=0;
+  return ret;
+}
+
+int stringIsDelimited(char *string) {
+  if(string==NULL)
+  {
+    return 0;
+  }
+  if(*string!='\'')
+  {
+    return 0;
+  }
+  char c;
+  char lastc=0;
+  string++;
+  while((c=*string)!=0)
+  {
+    string++;
+    lastc=c;
+  }
+  if(lastc!='\'')
+  {
+    return 0;
   }
   return 1;
 }

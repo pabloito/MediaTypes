@@ -23,6 +23,8 @@ char ** divideMediaRangeList(char * mediaTypeList);
 int mediaTypeBelongsToMediaRange(char ** mediaType, char ** mediaRange);
 void finalizeMediaType(char ** splitMediaType);
 int isValidMediaType(char ** mediaType);
+int stringIsDelimited(char *string);
+char *removeStringDelimitations(char *string);
 int fetchInputFromStdin(char ** bufferPosition);
 
 
