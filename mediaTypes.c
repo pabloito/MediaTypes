@@ -1,4 +1,6 @@
 #include "mediaTypes.h"
+#include "buffer.h"
+#include "stdbool.h"
 
 
 char * types[TYPE_ARRAY_LENGTH]= {"application", "audio", "example", "font", "image", "message", "model", "multipart", "text", "video"};
@@ -39,50 +41,167 @@ int mediaRangeEvaluator(int argc, char ** args)
     i++;
     recursiveDoublePointerFree(splitMediaRange);
   }
-  char * input;
-  fetchInputFromStdin(&input);
-  char ** mediaTypeCompleteList = divideUserInputByLine(input);
-  free(input);
-  char * mediaTypeComplete;
+  media_type_state_machine(mediaRangeCompleteList, "test", 5);
+  recursiveDoublePointerFree(mediaRangeCompleteList);
+}
 
-  i=0;
-  while((mediaTypeComplete=mediaTypeCompleteList[i])!=NULL)
-  {
-    int printCase=0;
-    char ** splitMediaType = divideMediaType(mediaTypeComplete);
+int evaluate_mime(char * mime, char ** media_type_complete_list)
+{
+    int ret=0;
+    char ** splitMediaType = divideMediaType(mime);
     if(!isValidMediaType(splitMediaType))
     {
-      printCase=2;
+      ret = OK;
     }
     int j=0;
-    while((mediaRangeComplete=mediaRangeCompleteList[j]) && !printCase)
+    char * mediaRangeComplete;
+    while(!ret && (mediaRangeComplete=media_type_complete_list[j]))
     {
       char ** splitMediaRange = divideMediaType(mediaRangeComplete);
       if(mediaTypeBelongsToMediaRange(splitMediaType,splitMediaRange))
       {
-        printCase=1;
+        ret = PROHIBITED;
       }
       j++;
       recursiveDoublePointerFree(splitMediaRange);
     }
-    switch(printCase)
+    char * multipart_str = calloc(1,10);
+    memcpy(multipart_str,"multipart",10);
+    char * splitMultipart[]={multipart_str,NULL};
+    if(!ret && mediaTypeBelongsToMediaRange(splitMediaType,splitMultipart))
     {
-      case 0:
-        printf("false\n");
+      ret = MULTIPART;
+    }
+    free(multipart_str);
+    recursiveDoublePointerFree(splitMediaType);
+
+    return (ret)?ret:OK;
+}
+
+int media_type_state_machine(char ** media_type_complete_list, char * replacement_message, int replacement_message_size)
+{
+  buffer_p buffer;
+  buffer_initialize(&buffer, buffer_size);
+
+  int finished=false;
+  int state=READ_LINE;
+  int new_line = true;
+
+  char * mime = NULL;
+  char * boundary = NULL;
+  int boundary_size=0;
+  char ** boundaries = malloc(sizeof(char *)*BOUNDARIES);
+
+  while(!finished)
+  {
+    switch(state)
+    {
+      case READ_LINE:
+        ;int amount = buffer_read_until_char(STDIN_FILENO, buffer, '\n');
+        if(amount==0)
+        {
+            state=FINISHED;
+            break;
+        }
+        if(new_line)
+        {
+          new_line=false;
+          if((mime = buffer_get_mime(buffer))!=NULL)
+          {
+            state = EVAL_MIME;
+          }
+          else
+          {
+            state=WRITE_LINE;
+          }
+        }
+        else
+        {
+          state=WRITE_LINE;
+        }
+
       break;
-      case 1:
-        printf("true\n");
+      case WRITE_LINE:
+        buffer_write(STDOUT_FILENO,buffer);
+        state=READ_LINE;
+        new_line=true;
       break;
-      case 2:
-        printf("null\n");
+      case EVAL_MIME:
+        ;int evaluation = evaluate_mime(mime, media_type_complete_list);
+        if(evaluation==OK)
+        {
+          state=WRITE_LINE;
+        }
+        if(evaluation==PROHIBITED)
+        {
+          state=WRITE_LINE_BEFORE_REPLACEMENT;
+        }
+        if(evaluation==MULTIPART)
+        {
+          state=BOUNDARY_SEARCH;
+        }
+        free(mime);
+      break;
+      case BOUNDARY_SEARCH:
+        boundaries[boundary_size]=buffer_get_boundary(buffer);
+        if(boundaries[boundary_size]!=NULL)
+        {
+          boundary_size++;
+          if(boundary_size%BOUNDARIES==0)
+          {
+            boundaries=realloc(boundaries,boundary_size+BOUNDARIES);
+          }
+        }
+        state=WRITE_LINE;
+      break;
+      case WRITE_LINE_BEFORE_REPLACEMENT:
+        buffer_write(STDOUT_FILENO,buffer);
+        state=WRITE_REPLACEMENT;
+      break;
+      case WRITE_REPLACEMENT:
+        write(STDOUT_FILENO, replacement_message, replacement_message_size);
+        write(STDOUT_FILENO,"\n", 1);
+        state=READ_LINE_AFTER_REPLACEMENT;
+      break;
+      case READ_LINE_AFTER_REPLACEMENT:
+        ;amount = buffer_read_until_char(STDIN_FILENO, buffer,'\n');
+        if(amount==0)
+        {
+            state=FINISHED;
+        }
+        int flag=0;
+        for(int i=0; i<boundary_size && !flag; i++)
+        {
+          char * boundary = boundaries[i];
+          if(boundary!=NULL && buffer_starts_with_boundary(boundary,buffer))
+          {
+            state=WRITE_LINE;
+            new_line=true;
+            flag=1;
+          }
+        }
+        if(!flag)
+        {
+          buffer_discard(buffer);
+        }
+
+      break;
+      case FINISHED:
+        finished=true;
+      break;
+      default:
+        printf("Invalid State, error\n");
+        exit(1);
       break;
     }
-    recursiveDoublePointerFree(splitMediaType);
-    i++;
   }
-  recursiveDoublePointerFree(mediaTypeCompleteList);
-  recursiveDoublePointerFree(mediaRangeCompleteList);
-  return 1;
+  for(int i=0; i<boundary_size; i++)
+  {
+    free(boundaries[i]);
+  }
+  free(boundaries);
+  buffer_finalize(buffer);
+
 }
 
 int fetchInputFromStdin(char ** bufferPosition)
@@ -154,12 +273,12 @@ char ** divideStrByDelimeter(char * string, char * delimeter)
     return dictionary;
   }
 
-  char * copy=strdup(string);
+  char * copy=my_strdup(string);
   char * tofree=copy;
 
   int i=0, size=INITIAL_DICTIONARY_SIZE;
 
-  while((nextToken = strsep(&copy, delimeter)))
+  while((nextToken = my_strsep(&copy, *delimeter)))
   {
     if(strcmp(nextToken,"")==0) break;
     if(i>=size)
@@ -167,7 +286,7 @@ char ** divideStrByDelimeter(char * string, char * delimeter)
       size+=INITIAL_DICTIONARY_SIZE;
       dictionary=realloc(dictionary,size *sizeof(char *));
     }
-    dictionary[i]=strdup(nextToken);
+    dictionary[i]=my_strdup(nextToken);
     i++;
   }
 
@@ -257,4 +376,38 @@ int isValidMediaType(char ** mediaType)
     return 0;
   }
   return 1;
+}
+
+//https://stackoverflow.com/questions/32944390/what-is-the-rationale-for-not-including-strdup-in-the-c-standard
+char *my_strdup(const char *s)
+{
+    size_t size = strlen(s) + 1;
+    char *p = malloc(size);
+    if (p) {
+        memcpy(p, s, size);
+    }
+    return p;
+}
+
+
+char *my_strsep(char ** string_ptr, char delimeter )
+{
+  if(string_ptr==NULL || *string_ptr==NULL)
+  {
+    return NULL;
+  }
+  char * ptr = *string_ptr;
+  char * ret = *string_ptr;
+  while(*ptr!=0 && *ptr!=delimeter)
+  {
+    *ptr++;
+  }
+  if(*ptr==delimeter)
+  {
+    *ptr=0;
+    *string_ptr=ptr+1;
+    return ret;
+  }
+  *string_ptr=NULL;
+  return ret;
 }
